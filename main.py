@@ -1,5 +1,7 @@
 import pygame as pg
 import sys
+import constants
+import platform
 from random import choice, random
 from os import path
 from settings import *
@@ -123,6 +125,8 @@ class Game:
         self.draw_debug = False
         self.paused = False
         self.night = True
+        self.smallscreen = False
+        self.fullscreen = False
         self.effects_sounds['level_start'].play()
 
     def run(self):
@@ -158,6 +162,7 @@ class Game:
                 hit.kill()
                 self.effects_sounds['gun_pickup'].play()
                 self.player.weapon = 'shotgun'
+
         # mobs hit player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
         for hit in hits:
@@ -170,6 +175,7 @@ class Game:
         if hits:
             self.player.hit()
             self.player.pos += vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
+
         # bullets hit mobs
         hits = pg.sprite.groupcollide(self.mobs, self.bullets, False, True)
         for mob in hits:
@@ -191,6 +197,16 @@ class Game:
         self.fog.blit(self.light_mask, self.light_rect)
         self.screen.blit(self.fog, (0, 0), special_flags=pg.BLEND_MULT)
 
+    def FULLSCREEN(self):
+        if self.fullscreen:
+            self.screen = pg.display.set_mode((WIDTH, HEIGHT),pg.FULLSCREEN)
+        self.fullscreen = not self.fullscreen
+
+    def SMALLSCREEN(self):
+        if self.smallscreen:
+            self.screen = pg.display.set_mode((WIDTH, HEIGHT))
+        self.smallscreen = not self.smallscreen
+
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         # self.screen.fill(BGCOLOR)
@@ -209,6 +225,15 @@ class Game:
         # pg.draw.rect(self.screen, WHITE, self.player.hit_rect, 2)
         if self.night:
             self.render_fog()
+
+        if self.fullscreen:
+            self.FULLSCREEN()
+            pg.display.flip()
+
+        if self.smallscreen:
+            self.SMALLSCREEN()
+            pg.display.flip()
+
         # HUD functions
         draw_player_health(self.screen, 10, 10, self.player.health / PLAYER_HEALTH)
         self.draw_text('Zombies: {}'.format(len(self.mobs)), self.hud_font, 30, WHITE,
@@ -230,21 +255,25 @@ class Game:
                     self.paused = not self.paused
                 if event.key == pg.K_n:
                     self.night = not self.night
+                if event.key == pg.K_f:
+                    self.fullscreen = not self.fullscreen
+                if event.key == pg.K_g:
+                    self.smallscreen = not self.smallscreen
 
     def show_start_screen(self):
-        self.screen.fill(CYAN)
-        self.draw_text("DEMON HITMAN", self.extra_font, 180, BLACK,
+        self.screen.fill(BLACK)
+        self.draw_text("DEMON HITMAN", self.extra_font, 180, RED,
                        WIDTH / 2, HEIGHT * 1.5 / 4 , align="center")
-        self.draw_text("Press a key to start the game", self.main_font, 50, LIGHTGREY,
+        self.draw_text("Press a key to start the game", self.main_font, 50, WHITE,
                        WIDTH / 2, HEIGHT * 3 / 4 , align="center")
         pg.display.flip()
         self.wait_for_key()
 
     def show_go_screen(self):
-        self.screen.fill(BLACK)
-        self.draw_text("GAME OVER", self.title_font, 150, RED,
+        self.screen.fill(WHITE)
+        self.draw_text("GAME OVER", self.title_font, 150, CHROME,
                        WIDTH / 2, HEIGHT / 2, align="center")
-        self.draw_text("Press a key to play again", self.hud_font, 50, WHITE,
+        self.draw_text("Press a key to play again", self.hud_font, 50, LIGHTGREY,
                        WIDTH / 2, HEIGHT * 3 / 4, align="center")
         pg.display.flip()
         self.wait_for_key()
