@@ -1,0 +1,13 @@
+UP Arrow key - Move Fowrward
+DOWN Arrow key - Move Backward
+LEFT Arrow key - Rotate Left
+RIGHT Arrow key - Rotate Right
+Space key - Shoot
+N key - Night mode on\off (toggleable)
+P key - Pause the Game
+F key- Fullscreen (fullscreen is not toggleable yet, so to get to the windowed screen press g)
+G key- windowed Screen (it only works after going fullscreen)
+Esc key - Exit the game
+
+
+Run the main.py from python(all the modules of the game are necessary to run)
